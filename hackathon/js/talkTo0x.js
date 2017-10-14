@@ -2,6 +2,8 @@ const Web3 = require('web3');
 const ZeroEx = require('0x.js').ZeroEx;
 const BigNumber = require('bignumber.js');
 
+const provider = new Web3.providers.HttpProvider('http://localhost:8545');
+
 // Instantiate 0x.js instance
 const zeroEx = new ZeroEx(provider);
 
@@ -19,9 +21,16 @@ const zeroEx = new ZeroEx(provider);
 	// Getting list of accounts
 	const accounts =  await zeroEx.getAvailableAddressesAsync();
 	console.log(accounts);
+	console.log(ZRX_ADDRESS);
 
 	// Set our address
 	const [makerAddress, takerAddress] = accounts;
+	
+	console.log(makerAddress);
+	
+
+
+	await new Promise((resolve) => setTimeout(resolve, 3000));
 
 	// Unlimited allowances to 0x contract for maker and taker
 	const txHashAllowMaker = await zeroEx.token.setUnlimitedProxyAllowanceAsync(ZRX_ADDRESS,  makerAddress); 

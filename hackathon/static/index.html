@@ -2,34 +2,108 @@
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<script>
+$.getJSON('http://localhost:8000/api/price_data/?format=json', function(data) {
+	//console.log(data);
+    var dataHolder = {};
+    var tokens = [];
+    for (var i = 0; i < data.length; i++) {
+    	//console.log("Buy token: " + data[i]["buy_token"]);
+    	//console.log("Sell token: " + data[i]["sell_token"]);
+    	//console.log("Price: " + (data[i]["sell_quantity"] / data[i]["buy_quantity"]));
+    	if (!dataHolder.hasOwnProperty(dataHolder[data[i]["buy_token"]])) {
+    		dataHolder[data[i]["buy_token"]] = {}
+    	}
+    	dataHolder[data[i]["buy_token"]][data[i]["sell_token"]] = data[i]["sell_quantity"] / data[i]["buy_quantity"];
+    }
+    console.log(dataHolder);
+    
+    var tokens = [];
+    for (var token in dataHolder) {
+    	if (dataHolder.hasOwnProperty(token)) {
+        	tokens.push(token);
+    	}
+    }
+    console.log("Tokens (length " + tokens.length + "): " + tokens);
+    
+    for (var i = 0; i < tokens.length; i++) {
+    	document.getElementById('row' + i).innerHTML = tokens[i];
+    	document.getElementById('column' + i).innerHTML = tokens[i];
+    	for (var j = 0; j < tokens.length; j++) {
+    		if (typeof dataHolder[tokens[i]][tokens[j]] != 'undefined') {
+    			document.getElementById('' + i + j).innerHTML = dataHolder[tokens[i]][tokens[j]].toFixed(2);
+    		}
+    	}
+    }
+});
+</script>
 
 <table class="table">
   <thead>
     <tr>
-      <th></th>
-      <th>Token1</th>
-      <th>Token2</th>
-      <th>Token3</th>
+      <th>From/To</th>
+      <th id="row0">abcde</th>
+      <th id="row1"></th>
+      <th id="row2"></th>
+      <th id="row3"></th>
+      <th id="row4"></th>
+      <th id="row5"></th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <th scope="row">Token1</th>
-      <td onmouseover="console.log('yo');">X</td>
-      <td>X</td>
-      <td>X</td>
+      <th id="column0" scope="row"></th>
+      <td id="00" onmouseover="console.log('yo');">X</td>
+      <td id="01">X</td>
+      <td id="02">X</td>
+	  <td id="03">X</td>
+      <td id="04">X</td>
+      <td id="05">X</td>
     </tr>
     <tr>
-      <th scope="row">Token2</th>
-      <td>X</td>
-      <td>X</td>
-      <td>X</td>
+      <th id="column1" scope="row"></th>
+      <td id="10">X</td>
+      <td id="11">X</td>
+      <td id="12">X</td>
+      <td id="13">X</td>
+      <td id="14">X</td>
+      <td id="15">X</td>
     </tr>
     <tr>
-      <th scope="row">Token3</th>
-      <td>X</td>
-      <td>X</td>
-      <td>X</td>
+      <th id="column2" scope="row"></th>
+      <td id="20">X</td>
+      <td id="21">X</td>
+      <td id="22">X</td>
+      <td id="23">X</td>
+      <td id="24">X</td>
+      <td id="25">X</td>
+    </tr>
+        <tr>
+      <th id="column3" scope="row"></th>
+      <td id="30">X</td>
+      <td id="31">X</td>
+      <td id="32">X</td>
+      <td id="33">X</td>
+      <td id="34">X</td>
+      <td id="35">X</td>
+    </tr>
+        <tr>
+      <th id="column4" scope="row"></th>
+      <td id="40">X</td>
+      <td id="41">X</td>
+      <td id="42">X</td>
+      <td id="43">X</td>
+      <td id="44">X</td>
+      <td id="45">X</td>
+    </tr>
+            <tr>
+      <th id="column5" scope="row"></th>
+      <td id="50">X</td>
+      <td id="51">X</td>
+      <td id="52">X</td>
+      <td id="53">X</td>
+      <td id="54">X</td>
+      <td id="55">X</td>
     </tr>
   </tbody>
 </table>
