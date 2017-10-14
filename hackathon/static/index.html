@@ -36,6 +36,43 @@ $.getJSON('http://localhost:8000/api/price_data/?format=json', function(data) {
     	}
     }
 });
+
+setInterval(function() {
+  $.getJSON('http://localhost:8000/api/price_data/?format=json', function(data) {
+  //console.log(data);
+    var dataHolder = {};
+    var tokens = [];
+    for (var i = 0; i < data.length; i++) {
+      //console.log("Buy token: " + data[i]["buy_token"]);
+      //console.log("Sell token: " + data[i]["sell_token"]);
+      //console.log("Price: " + (data[i]["sell_quantity"] / data[i]["buy_quantity"]));
+      if (!dataHolder.hasOwnProperty(dataHolder[data[i]["buy_token"]])) {
+        dataHolder[data[i]["buy_token"]] = {}
+      }
+      dataHolder[data[i]["buy_token"]][data[i]["sell_token"]] = data[i]["sell_quantity"] / data[i]["buy_quantity"];
+    }
+    console.log(dataHolder);
+    
+    var tokens = [];
+    for (var token in dataHolder) {
+      if (dataHolder.hasOwnProperty(token)) {
+          tokens.push(token);
+      }
+    }
+    console.log("Tokens (length " + tokens.length + "): " + tokens);
+    
+    for (var i = 0; i < tokens.length; i++) {
+      $('row' + i).html(tokens[i]);
+      $('column' + i).html(tokens[i]);
+      for (var j = 0; j < tokens.length; j++) {
+        if (typeof dataHolder[tokens[i]][tokens[j]] != 'undefined') {
+          $('#' + i + j).html(dataHolder[tokens[i]][tokens[j]].toFixed(2));
+        }
+      }
+    }
+});
+}, 5000);
+
 </script>
 
 <table class="table">

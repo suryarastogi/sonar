@@ -4,15 +4,28 @@ from hackathon.celery import update_signal
 from django.dispatch import receiver
 
 class Utils(object):
+
+	@staticmethod
+	def clear_db():
+		PriceData.objects.all().delete()
+
 	@staticmethod
 	def seed_db():
 		tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
 		for b in tokens:
 				for s in tokens:
 					if s is not b:
-						bq = random.uniform(.5, 2) 
-						sq = random.uniform(.5, 2)
-						PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
+						if PriceData.objects.filter(buy_token=b, sell_token=s).exists():
+							trade = PriceData.objects.filter(buy_token=b, sell_token=s).all()[0]
+							bq = random.uniform(.5, 2) 
+							sq = random.uniform(.5, 2)
+							trade.buy_quantity = bq
+							trade.sell_quantity = sq
+							trade.save()
+						else:
+							bq = random.uniform(.5, 2) 
+							sq = random.uniform(.5, 2)
+							PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
 
 # Hacky functions
 #from price.price_handler import PriceHandler
