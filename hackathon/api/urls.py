@@ -3,4 +3,5 @@ from api import views
 
 urlpatterns = [
 	url(r'^api/price_data/$', views.PriceDataList.as_view()),
+	url(r'^$', views.JSFrontEnd)
 ]
