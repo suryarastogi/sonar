@@ -27,6 +27,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CELERY_IMPORTS = (
+    'price.tasks',
+)
 
 # Application definition
 
@@ -40,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'api',
     'price',
+
 ]
 
 MIDDLEWARE = [

@@ -1,20 +1,34 @@
-from price.models import PriceData
-#from price.price_handler import PriceHandler
 import random
+from price.models import PriceData
+from hackathon.celery import update_signal
+from django.dispatch import receiver
 
 class Utils(object):
-	tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
-
 	@staticmethod
-	def seed_dummy():
-
+	def seed_db():
+		tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
 		for b in tokens:
+				for s in tokens:
+					if s is not b:
+						bq = random.uniform(.5, 2) 
+						sq = random.uniform(.5, 2)
+						PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
+
+# Hacky functions
+#from price.price_handler import PriceHandler
+'''update_signal.connect(seed_db)
+print("test")
+@receiver(update_signal)
+def seed_db():
+	print("Received Signal")
+	tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
+	for b in tokens:
 			for s in tokens:
 				if s is not b:
 					bq = random.uniform(.5, 2) 
 					sq = random.uniform(.5, 2)
 					PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
-
+'''
 '''
 	# Called every 10 seconds
 	@staticmethod
