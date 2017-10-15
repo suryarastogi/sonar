@@ -1,0 +1,218 @@
+GetCurrencies
+Returns all currency data
+GET https://www.cryptopia.co.nz/api/GetCurrencies
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":[
+            {
+                "Id":1,
+                "Name":"Bitcoin",
+                "Symbol":"BTC",
+                "Algorithm":"sha256"
+                "WithdrawFee":0.00010000,
+                "MinWithdraw":0.00040000,
+                "MinBaseTrade":0.0,
+                "IsTipEnabled":false,
+                "MinTip":0.0,
+                "DepositConfirmations":6,
+                "Status":"Maintenance",
+                "StatusMessage":"Unable to sync network",
+		"ListingStatus": "Active"
+            },
+            {
+                ...
+            }
+           ]
+}
+
+GetTradePairs
+Returns all trade pair data
+GET https://www.cryptopia.co.nz/api/GetTradePairs
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":[{
+                "Id":104,
+                "Label":"LTC/BTC",
+                "Currency":"Litecoin",
+                "Symbol":"LTC",
+                "BaseCurrency":"Bitcoin",
+                "BaseSymbol":"BTC",
+                "Status":"OK",
+                "StatusMessage":"",
+                "TradeFee":"0.20000000",
+                "MinimumTrade":"0.00000001,
+                "MaximumTrade":"1000000000.00000000",
+                "MinimumBaseTrade":"0.00000500",
+                "MaximumBaseTrade":"1000000000.00000000",
+                "MinimumPrice":"0.00000001",
+                "MaximumPrice":"1000000000.00000000"
+            },
+            {
+                ...
+            }]
+}
+
+GetMarkets
+Returns all market data
+GET https://www.cryptopia.co.nz/api/GetMarkets
+Param: baseMarket (optional, default: All)
+Param: hours (optional, default: 24)
+GET https://www.cryptopia.co.nz/api/GetMarkets/BTC
+GET https://www.cryptopia.co.nz/api/GetMarkets/12
+GET https://www.cryptopia.co.nz/api/GetMarkets/BTC/12
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":[{
+                "TradePairId":100,
+                "Label":"LTC/BTC",
+                "AskPrice":0.00006000,
+                "BidPrice":0.02000000,
+                "Low":0.00006000,
+                "High":0.00006000,
+                "Volume":1000.05639978,
+                "LastPrice":0.00006000,
+                "BuyVolume":34455.678,
+                "SellVolume":67003436.37658233,
+                "Change":-400.00000000,
+                "Open": 0.00000500,
+                "Close": 0.00000600,
+                "BaseVolume": 3.58675866,
+                "BaseBuyVolume": 11.25364758,
+                "BaseSellVolume": 3456.06746543
+            },
+            {
+                ...
+            }]
+}
+
+GetMarket
+Returns market data for the specified trade pair
+Param: market (Required) (TradePairId or MarketName)
+GET https://www.cryptopia.co.nz/api/GetMarket/100
+GET https://www.cryptopia.co.nz/api/GetMarket/DOT_BTC
+Param: hours (optional, default: 24)
+GET https://www.cryptopia.co.nz/api/GetMarket/100/6
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":{
+                "TradePairId":100,
+                "Label":"LTC/BTC",
+                "AskPrice":0.00006000,
+                "BidPrice":0.02000000,
+                "Low":0.00006000,
+                "High":0.00006000,
+                "Volume":1000.05639978,
+                "LastPrice":0.00006000,
+                "BuyVolume":67003436.37658233,
+                "SellVolume":67003436.37658233,
+                "Change":-400.00000000,
+		"Open": 0.00000500,
+                "Close": 0.00000600,
+                "BaseVolume": 3.58675866,
+                "BaseBuyVolume": 11.25364758,
+		"BaseSellVolume": 3456.06746543
+            }
+}
+
+GetMarketHistory
+Returns the market history data for the specified trade pair.
+Param: market (Required) (TradePairId or MarketName)
+GET https://www.cryptopia.co.nz/api/GetMarketHistory/100
+GET https://www.cryptopia.co.nz/api/GetMarketHistory/DOT_BTC
+Param: hours (optional, default: 24)
+GET https://www.cryptopia.co.nz/api/GetMarketHistory/100/48
+GET https://www.cryptopia.co.nz/api/GetMarketHistory/DOT_BTC/48
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":[{
+            "TradePairId":100,
+            "Label":"LTC/BTC",
+            "Type":"Sell",
+            "Price":0.00006000,
+            "Amount":499.99640000,
+            "Total":0.02999978,
+            "Timestamp": 1418297368
+            },
+            {
+                ....
+            }]
+}
+
+GetMarketOrders
+Returns the open buy and sell orders for the specified trade pair.
+Param: market (Required) (TradePairId or MarketName)
+GET https://www.cryptopia.co.nz/api/GetMarketOrders/100
+GET https://www.cryptopia.co.nz/api/GetMarketOrders/DOT_BTC
+Param: orderCount (optional, default: 100)
+GET https://www.cryptopia.co.nz/api/GetMarketOrders/100/50
+GET https://www.cryptopia.co.nz/api/GetMarketOrders/DOT_BTC/50
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":{
+            "Buy":[{
+                        "TradePairId":100,
+                        "Label":"LTC/BTC",
+                        "Price":0.00006000,
+                        "Volume":455055.00360000,
+                        "Total":27.303300
+                   },
+                   {
+                      ...
+                   }],
+            "Sell":[{
+                        "TradePairId":100,
+                        "Label":"LTC/BTC",
+                        "Price":0.02000000,
+                        "Volume":499.99640000,
+                        "Total":9.999928
+                    },
+                    {
+                       ...
+                    }],
+            }
+}
+
+GetMarketOrderGroups
+Returns the open buy and sell orders for the specified markets.
+Param: markets (Required) (TradePairIds or MarketNames separated by '-')
+GET https://www.cryptopia.co.nz/api/GetMarketOrderGroups/100-101-102-103
+GET https://www.cryptopia.co.nz/api/GetMarketOrderGroups/DOT_BTC-DOT_LTC-DOT_DOGE-DOT_UNO
+Param: orderCount (optional, default: 100)
+GET https://www.cryptopia.co.nz/api/GetMarketOrderGroups/100-101-102-103/50
+GET https://www.cryptopia.co.nz/api/GetMarketOrderGroups/DOT_BTC-DOT_LTC-DOT_DOGE-DOT_UNO/50
+
+{
+    "Success":true,
+    "Message":null,
+    "Data":{[{
+	    	"TradePairId": 100,
+	    	"Market": "LTC_BTC"
+            	"Buy":[orders...],
+            	"Sell":[orders...]
+             },
+	     {
+      		"TradePairId": 101,
+     		"Market": "DOT_BTC"
+            	"Buy":[orders...],
+                "Sell":[orders...],
+             },
+             {
+                "TradePairId": 102,
+                "Market": "DOGE_BTC"
+                "Buy":[orders...],
+                "Sell":[orders...],
+             }
+    }
+}
