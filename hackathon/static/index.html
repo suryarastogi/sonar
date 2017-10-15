@@ -17,7 +17,7 @@ $.getJSON('http://localhost:8000/api/price_data/?format=json', function(data) {
     	dataHolder[data[i]["buy_token"]][data[i]["sell_token"]] = data[i]["sell_quantity"] / data[i]["buy_quantity"];
     }
     console.log(dataHolder);
-    
+
     var tokens = [];
     for (var token in dataHolder) {
     	if (dataHolder.hasOwnProperty(token)) {
@@ -25,7 +25,7 @@ $.getJSON('http://localhost:8000/api/price_data/?format=json', function(data) {
     	}
     }
     console.log("Tokens (length " + tokens.length + "): " + tokens);
-    
+
     for (var i = 0; i < tokens.length; i++) {
     	document.getElementById('row' + i).innerHTML = tokens[i];
     	document.getElementById('column' + i).innerHTML = tokens[i];
@@ -52,7 +52,7 @@ setInterval(function() {
       dataHolder[data[i]["buy_token"]][data[i]["sell_token"]] = data[i]["sell_quantity"] / data[i]["buy_quantity"];
     }
     console.log(dataHolder);
-    
+
     var tokens = [];
     for (var token in dataHolder) {
       if (dataHolder.hasOwnProperty(token)) {
@@ -60,13 +60,13 @@ setInterval(function() {
       }
     }
     console.log("Tokens (length " + tokens.length + "): " + tokens);
-    
+
     for (var i = 0; i < tokens.length; i++) {
       $('row' + i).html(tokens[i]);
       $('column' + i).html(tokens[i]);
       for (var j = 0; j < tokens.length; j++) {
         if (typeof dataHolder[tokens[i]][tokens[j]] != 'undefined') {
-          $('#' + i + j).html(dataHolder[tokens[i]][tokens[j]].toFixed(2));
+          $('#' + i + j).html(dataHolder[tokens[i]][tokens[j]].toFixed(9));
         }
       }
     }
@@ -78,8 +78,8 @@ setInterval(function() {
 <table class="table">
   <thead>
     <tr>
-      <th>From/To</th>
-      <th id="row0">abcde</th>
+      <th>Exchange below to: </th>
+      <th id="row0"></th>
       <th id="row1"></th>
       <th id="row2"></th>
       <th id="row3"></th>

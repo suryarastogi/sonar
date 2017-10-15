@@ -13,7 +13,7 @@ app = Celery('hackathon')
 @app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     # Calls test('hello') every 10 seconds.
-    sender.add_periodic_task(10.0, signal.s('Refresh'))
+    sender.add_periodic_task(30.0, signal.s('Refresh'))
 
 '''    # Executes every Monday morning at 7:30 a.m.
     sender.add_periodic_task(
