@@ -26,30 +26,14 @@ for css in external_css:
 
 # Load data
 df = pd.read_json('http://localhost:8000/api/price_data/?format=json')
+tokens = set(df['buy_token'])
 
-# Dummy data
-DF_WALMART = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/1962_2006_walmart_store_openings.csv')
 
 DF_GAPMINDER = pd.read_csv(
     'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
 )
 DF_GAPMINDER = DF_GAPMINDER[DF_GAPMINDER['year'] == 2007]
 DF_GAPMINDER.loc[0:20]
-
-DF_SIMPLE = pd.DataFrame({
-    'x': ['A', 'B', 'C', 'D', 'E', 'F'],
-    'y': [4, 3, 1, 2, 3, 6],
-    'z': ['a', 'b', 'c', 'a', 'b', 'c']
-})
-
-ROWS = [
-    {'a': 'AA', 'b': 1},
-    {'a': 'AB', 'b': 2},
-    {'a': 'BB', 'b': 3},
-    {'a': 'BC', 'b': 4},
-    {'a': 'CC', 'b': 5},
-    {'a': 'CD', 'b': 6}
-]
 
 
 # Make app layout
@@ -69,7 +53,7 @@ app.layout = html.Div(
         ],
             className='row'
         ),
-        html.Hr(style={'margin': '0', 'margin-bottom': '5'}),
+        html.Hr(style={'margin': '0', 'margin-bottom': '15'}),
         html.Div([
             html.Div([
                 dcce.DataTable(
@@ -77,30 +61,62 @@ app.layout = html.Div(
 
                     # optional - sets the order of columns
                     columns=sorted(DF_GAPMINDER.columns),
-
                     row_selectable=True,
                     filterable=True,
                     sortable=True,
-                    id='datatable-gapminder'
+                    id='datatable'
                 ),
             ],
-                className='eight columns',
+                className='nine columns',
             ),
             html.Div([
-                html.Label('Exchange '),
-                dcc.Dropdown(
-                    id='first_currency',
-                    options=[{'label': i, 'value': i} for i in ['Canada', 'USA', 'Mexico']],
-                    value='SPY',
+                html.H4('Exchange'),
+                html.Div([
+                    dcc.Dropdown(
+                        id='first_currency',
+                        options=[{'label': i, 'value': i} for i in tokens],
+                        multi=True,
+                        value='WETH',
+                    ),
+                    dcc.Input(
+                        id='first_currency_amount',
+                        value='0.1 WETH',
+                        type="text",
+                        style={'width': '260'}
+                    ),
+                ],
+                    style={'max-width': '260'}
                 ),
-                html.Label('Into'),
-                dcc.Dropdown(
-                    id='second_currency',
-                    options=[{'label': i, 'value': i} for i in ['Canada', 'USA', 'Mexico']],
-                    value='SPY',
+                html.H4('Into'),
+                html.Div([
+                    dcc.Dropdown(
+                        id='second_currency',
+                        options=[{'label': i, 'value': i} for i in tokens],
+                        multi=True,
+                        value='ZRX',
+                    ),
+                    dcc.Input(
+                        id='second_currency_amount',
+                        value='',
+                        type="text",
+                        style={'width': '260'}
+                    ),
+                ],
+                    style={'max-width': '260'}
+                ),
+                html.Hr(style={'margin-top': '30', 'margin-bottom': '30'}),
+                html.Button(
+                    'TRADE',
+                    id='trade_button',
+                    style={'background-color': '#e3e5f8', 'width': '130'}
+                ),
+                html.Button(
+                    'ADVANCED',
+                    id='trade_button',
+                    style={'background-color': '#FFFFFF', 'width': '130'}
                 ),
             ],
-                className='four columns',
+                className='three columns',
             ),
         ],
             className='row',
@@ -118,7 +134,7 @@ app.layout = html.Div(
         'max-width': '1200',
         'margin-left': 'auto',
         'margin-right': 'auto',
-        'font-family': 'overpass',
+        'font-family': 'futura',
         'background-color': '#F3F3F3',
         'padding': '40',
         'padding-top': '20',
@@ -129,8 +145,8 @@ app.layout = html.Div(
 
 @app.callback(
     Output('chart', 'figure'),
-    [Input('datatable-gapminder', 'rows'),
-     Input('datatable-gapminder', 'selected_row_indices')])
+    [Input('datatable', 'rows'),
+     Input('datatable', 'selected_row_indices')])
 def update_figure(rows, selected_row_indices):
     dff = pd.DataFrame(rows)
     fig = plotly.tools.make_subplots(
