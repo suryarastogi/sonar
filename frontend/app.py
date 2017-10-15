@@ -18,7 +18,7 @@ from history import download_data, extract_data
 # Setup app
 app = dash.Dash()
 
-external_css = ["https://cdn.rawgit.com/plotly/dash-app-stylesheets/1564e52057ea20b6c23a4047d3d9261fc793f3af/dash-analytics-report.css",
+external_css = ["https://cdn.rawgit.com/suryanash/sonar/master/frontend/style.css",
                 "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"]
 
 for css in external_css:
@@ -52,7 +52,7 @@ app.layout = html.Div(
     [
         html.Div([
             html.Img(
-                src="https://rawgit.com/suryanash/sonar/master/assets/1024.png",
+                src="https://cdn.rawgit.com/suryanash/sonar/master/assets/1024.png",
                 className='four columns',
                 style={
                     'height': '80',
