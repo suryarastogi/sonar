@@ -5,6 +5,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import cufflinks as cf
 
 import dash
 from dash.dependencies import Input, Output, State, Event
@@ -12,12 +13,12 @@ import dash_core_components as dcc
 import dash_html_components as html
 import dash_table_experiments as dcce
 
+from history import download_data, extract_data
 
 # Setup app
 app = dash.Dash()
 
-external_css = ["https://fonts.googleapis.com/css?family=Roboto:400,300,600",
-                "https://cdn.rawgit.com/plotly/dash-app-stylesheets/1564e52057ea20b6c23a4047d3d9261fc793f3af/dash-analytics-report.css",
+external_css = ["https://cdn.rawgit.com/plotly/dash-app-stylesheets/1564e52057ea20b6c23a4047d3d9261fc793f3af/dash-analytics-report.css",
                 "https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"]
 
 for css in external_css:
@@ -26,15 +27,25 @@ for css in external_css:
 
 # Load data
 df = pd.read_json('http://localhost:8000/api/price_data/?format=json')
+
+# Coinmarketcap tables
+translate = {
+    'ANT': 'currencies/aragon/',
+    'DNT': '/currencies/district0x/',
+    'MTL': 'currencies/metal/',
+    'OMG': 'currencies/omisego/',
+    'WETH': 'currencies/ethereum',
+    'ZRX': 'currencies/0x/'}
+
+
+# Convert to ratio table
+df['ratio'] = df['sell_quantity']/df['buy_quantity']
+df_matrix = df.pivot('buy_token', 'sell_token')['ratio'].round(decimals=8)
+df_matrix['[INTO]'] = df_matrix.index
+df_dict = df_matrix.to_dict('records')
+
+# For selector
 tokens = set(df['buy_token'])
-
-
-DF_GAPMINDER = pd.read_csv(
-    'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
-)
-DF_GAPMINDER = DF_GAPMINDER[DF_GAPMINDER['year'] == 2007]
-DF_GAPMINDER.loc[0:20]
-
 
 # Make app layout
 app.layout = html.Div(
@@ -57,17 +68,16 @@ app.layout = html.Div(
         html.Div([
             html.Div([
                 dcce.DataTable(
-                    rows=DF_GAPMINDER.to_dict('records'),
-
-                    # optional - sets the order of columns
-                    columns=sorted(DF_GAPMINDER.columns),
-                    row_selectable=True,
+                    rows=df_dict,
+                    columns=df_matrix.columns,
+                    row_selectable=False,
                     filterable=True,
                     sortable=True,
                     id='datatable'
                 ),
             ],
                 className='nine columns',
+                style={'background-color': '#F5F5F5'}
             ),
             html.Div([
                 html.H4('Exchange'),
@@ -76,7 +86,7 @@ app.layout = html.Div(
                         id='first_currency',
                         options=[{'label': i, 'value': i} for i in tokens],
                         multi=True,
-                        value='WETH',
+                        value=['WETH'],
                     ),
                     dcc.Input(
                         id='first_currency_amount',
@@ -85,7 +95,7 @@ app.layout = html.Div(
                         style={'width': '260'}
                     ),
                 ],
-                    style={'max-width': '260'}
+                    style={'max-width': '260', 'background-color': '#FFFFFF'}
                 ),
                 html.H4('Into'),
                 html.Div([
@@ -93,7 +103,7 @@ app.layout = html.Div(
                         id='second_currency',
                         options=[{'label': i, 'value': i} for i in tokens],
                         multi=True,
-                        value='ZRX',
+                        value=['ZRX'],
                     ),
                     dcc.Input(
                         id='second_currency_amount',
@@ -102,7 +112,7 @@ app.layout = html.Div(
                         style={'width': '260'}
                     ),
                 ],
-                    style={'max-width': '260'}
+                    style={'max-width': '260', 'background-color': '#FFFFFF'}
                 ),
                 html.Hr(style={'margin-top': '30', 'margin-bottom': '30'}),
                 html.Button(
@@ -120,7 +130,7 @@ app.layout = html.Div(
             ),
         ],
             className='row',
-            style={'margin-bottom': '10'}
+            style={'margin-bottom': '20'}
         ),
         html.Div([
             dcc.Graph(id='chart', style={'max-height': '600', 'height': '40vh'}),
@@ -130,11 +140,11 @@ app.layout = html.Div(
         ),
     ],
     style={
-        'width': '85%',
+        'width': '95%',
         'max-width': '1200',
         'margin-left': 'auto',
         'margin-right': 'auto',
-        'font-family': 'futura',
+        'font-family': 'overpass',
         'background-color': '#F3F3F3',
         'padding': '40',
         'padding-top': '20',
@@ -143,47 +153,56 @@ app.layout = html.Div(
 )
 
 
-@app.callback(
-    Output('chart', 'figure'),
-    [Input('datatable', 'rows'),
-     Input('datatable', 'selected_row_indices')])
-def update_figure(rows, selected_row_indices):
-    dff = pd.DataFrame(rows)
-    fig = plotly.tools.make_subplots(
-        rows=3, cols=1,
-        subplot_titles=('Life Expectancy', 'GDP Per Capita', 'Population',),
-        shared_xaxes=True)
-    marker = {'color': ['#0074D9']*len(dff)}
-    for i in (selected_row_indices or []):
-        marker['color'][i] = '#FF851B'
-    fig.append_trace({
-        'x': dff['country'],
-        'y': dff['lifeExp'],
-        'type': 'bar',
-        'marker': marker
-    }, 1, 1)
-    fig.append_trace({
-        'x': dff['country'],
-        'y': dff['gdpPercap'],
-        'type': 'bar',
-        'marker': marker
-    }, 2, 1)
-    fig.append_trace({
-        'x': dff['country'],
-        'y': dff['pop'],
-        'type': 'bar',
-        'marker': marker
-    }, 3, 1)
-    fig['layout']['showlegend'] = False
-    fig['layout']['height'] = 800
-    fig['layout']['margin'] = {
-        'l': 40,
-        'r': 10,
-        't': 60,
-        'b': 200
-    }
-    fig['layout']['yaxis3']['type'] = 'log'
-    return fig
+@app.callback(Output('chart', 'figure'),
+              [Input('first_currency', 'value'),
+               Input('second_currency', 'value')])
+def update_figure(first_currency, second_currency):
+
+    # print(first_currency, second_currency)
+
+    scraped1 = extract_data(download_data(translate[first_currency[0]], '2000', '2018'))
+    pair1 = pd.DataFrame(scraped1[1], columns=scraped1[0])
+
+    scraped2 = extract_data(download_data(translate[second_currency[0]], '2000', '2018'))
+    pair2 = pd.DataFrame(scraped2[1], columns=scraped2[0])
+
+    if len(pair1) <= len(pair2):
+        cut = len(pair1)
+        index = pair1.index
+    else:
+        cut = len(pair2)
+        index = pair2.index
+
+    pair = pd.DataFrame([], index=index)
+    for i in ['Open', 'High', 'Low', 'Close']:
+        pair[i] = pair1[i][:cut].values.astype(float) / pair2[i][:cut].values.astype(float)
+
+    trace = dict(
+        type='candlestick',
+        x=pair.index,
+        open=pair.Open,
+        high=pair.High,
+        low=pair.Low,
+        close=pair.Close
+    )
+
+    data = [trace]
+
+    layout = dict(
+        autosize=True,
+        font=dict(family='Overpass'),
+        paper_bgcolor='#FAFAFA',
+        margin=dict(
+            l=40,
+            r=20,
+            b=40,
+            t=60
+        ),
+        title=first_currency[0] + '_' + second_currency[0],
+        showlegend=False,
+    )
+
+    return dict(data=data, layout=layout)
 
 
 if __name__ == '__main__':
