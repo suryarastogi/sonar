@@ -11,18 +11,21 @@ class Utils(object):
 
 	@staticmethod
 	def seed_db():
+		#price_pairs = PriceHandler.get_quantity_pairs()
 		tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
 		for b in tokens:
 				for s in tokens:
 					if s is not b:
 						if PriceData.objects.filter(buy_token=b, sell_token=s).exists():
 							trade = PriceData.objects.filter(buy_token=b, sell_token=s).all()[0]
+							#bq, sq, cancel = price_pairs[b][s]
 							bq = random.uniform(.5, 2) 
 							sq = random.uniform(.5, 2)
 							trade.buy_quantity = bq
 							trade.sell_quantity = sq
 							trade.save()
 						else:
+							#bq, sq, cancel = price_pairs[b][s]
 							bq = random.uniform(.5, 2) 
 							sq = random.uniform(.5, 2)
 							PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
