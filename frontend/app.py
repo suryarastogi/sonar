@@ -57,11 +57,11 @@ app.layout = html.Div(
     [
         html.Div([
             html.Img(
-                src="https://datashop.cboe.com/Themes/Livevol/Content/images/logo.png",
+                src="https://rawgit.com/suryanash/sonar/master/assets/1024.png",
                 className='twelve columns',
                 style={
-                    'height': '60',
-                    'width': '160',
+                    'height': '80',
+                    'width': '350',
                     'float': 'left',
                     'position': 'relative',
                 },
