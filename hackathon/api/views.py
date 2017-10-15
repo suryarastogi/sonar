@@ -14,7 +14,7 @@ class PriceDataList(generics.ListCreateAPIView):
     serializer_class = PriceSerializer
 
 
-class PriceDataList(generics.ListCreateAPIView):
+class HistoricalDataList(generics.ListCreateAPIView):
     queryset = HistoricalData.objects.all()
     serializer_class = HistoricalSerializer
 
