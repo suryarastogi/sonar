@@ -19,22 +19,19 @@ class Utils(object):
 		for b in tokens:
 				for s in tokens:
 					if s is not b:
-						print("reached")
 						if PriceData.objects.filter(buy_token=b, sell_token=s).exists():
-							print("2")
 							trade = PriceData.objects.filter(buy_token=b, sell_token=s).all()[0]
 							bq, sq, cancel = price_pairs[b][s]
 							#bq = random.uniform(.5, 2) 
 							#sq = random.uniform(.5, 2)
-							trade.buy_quantity = bq[0]
-							trade.sell_quantity = sq[0]
+							trade.buy_quantity = bq
+							trade.sell_quantity = sq
 							trade.save()
 						else:
 							bq, sq, cancel = price_pairs[b][s]
 							#bq = random.uniform(.5, 2) 
 							#sq = random.uniform(.5, 2)
-							print((b, bq[0], s, sq[0]))
-							PriceData.objects.create(buy_token=b, buy_quantity=bq[0], sell_token=s, sell_quantity=sq[0], cancel_order=False)
+							PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
 
 # Hacky functions
 #from price.price_handler import PriceHandler

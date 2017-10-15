@@ -73,14 +73,14 @@ class OutputHandler(object):
         pairs = {}
 
         payload = {
-            'WETH': {'MTL': (bid[0], bid[0] * bid[1], False),
-                     'ZRX': (bid[0], bid[0] * bid[1], False),
+            'WETH': {'MTL': (bid[0][0], bid[0][0] * bid[1][0], False),
+                     'ZRX': (bid[0][0], bid[0][0] * bid[1][0], False),
                    },
-            'MTL': {'WETH': (bid[0], bid[0] * bid[1], False),
-                     'ZRX': (bid[0], bid[0] * bid[1], False),
+            'MTL': {'WETH': (bid[0][0], bid[0][0] * bid[1][0], False),
+                     'ZRX': (bid[0][0], bid[0][0] * bid[1][0], False),
                    },
-            'ZRX': {'MTL': (bid[0], bid[0] * bid[1], False),
-                     'WETH': (bid[0], bid[0] * bid[1], False),
+            'ZRX': {'MTL': (bid[0][0], bid[0][0] * bid[1][0], False),
+                     'WETH': (bid[0][0], bid[0][0] * bid[1][0], False),
                    }
         }
 
