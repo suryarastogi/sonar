@@ -53,13 +53,18 @@ app.layout = html.Div(
         html.Div([
             html.Img(
                 src="https://rawgit.com/suryanash/sonar/master/assets/1024.png",
-                className='twelve columns',
+                className='four columns',
                 style={
                     'height': '80',
                     'width': '350',
                     'float': 'left',
                     'position': 'relative',
                 },
+            ),
+            html.H3(
+                'A Decentralized Shapeshift 2.0',
+                className='eight columns',
+                style={'text-align': 'right'}
             ),
         ],
             className='row'
@@ -90,8 +95,8 @@ app.layout = html.Div(
                     ),
                     dcc.Input(
                         id='first_currency_amount',
-                        value='0.1 WETH',
-                        type="text",
+                        value=0.1,
+                        type='number',
                         style={'width': '260'}
                     ),
                 ],
@@ -108,7 +113,7 @@ app.layout = html.Div(
                     dcc.Input(
                         id='second_currency_amount',
                         value='',
-                        type="text",
+                        type='number',
                         style={'width': '260'}
                     ),
                 ],
@@ -130,13 +135,13 @@ app.layout = html.Div(
             ),
         ],
             className='row',
-            style={'margin-bottom': '20'}
+            style={'margin-bottom': '15'}
         ),
         html.Div([
             dcc.Graph(id='chart', style={'max-height': '600', 'height': '40vh'}),
         ],
             className='row',
-            style={'margin-bottom': '20'}
+            style={'margin-bottom': '15'}
         ),
     ],
     style={
@@ -146,9 +151,9 @@ app.layout = html.Div(
         'margin-right': 'auto',
         'font-family': 'overpass',
         'background-color': '#F3F3F3',
-        'padding': '40',
-        'padding-top': '20',
-        'padding-bottom': '20',
+        'padding': '30',
+        'padding-top': '15',
+        'padding-bottom': '15',
     },
 )
 
@@ -168,22 +173,22 @@ def update_figure(first_currency, second_currency):
 
     if len(pair1) <= len(pair2):
         cut = len(pair1)
-        index = pair1.index
+        indexing = pair1['Date']
     else:
         cut = len(pair2)
-        index = pair2.index
+        indexing = pair2['Date']
 
-    pair = pd.DataFrame([], index=index)
+    pair = pd.DataFrame([], index=[dt.datetime.strptime(string.replace('Fe', 'Feb'), '%b %d, %Y') for string in indexing])
     for i in ['Open', 'High', 'Low', 'Close']:
         pair[i] = pair1[i][:cut].values.astype(float) / pair2[i][:cut].values.astype(float)
 
     trace = dict(
         type='candlestick',
         x=pair.index,
-        open=pair.Open,
-        high=pair.High,
-        low=pair.Low,
-        close=pair.Close
+        open=pair['Open'],
+        high=pair['High'],
+        low=pair['Low'],
+        close=pair['Close']
     )
 
     data = [trace]
@@ -198,11 +203,27 @@ def update_figure(first_currency, second_currency):
             b=40,
             t=60
         ),
-        title=first_currency[0] + '_' + second_currency[0],
+        title='Pair: ' + first_currency[0] + '_' + second_currency[0],
         showlegend=False,
+        xaxis=dict(
+            type='date'
+        )
     )
 
     return dict(data=data, layout=layout)
+
+
+@app.callback(Output('second_currency_amount', 'value'),
+              [Input('first_currency', 'value'),
+               Input('second_currency', 'value'),
+               Input('first_currency_amount', 'value')])
+def update_second_amount(first_currency, second_currency, first_currency_amount):
+
+    dff = df[df['sell_token'].isin(first_currency) & df['buy_token'].isin(second_currency)]
+
+    # print(dff)
+
+    return float(first_currency_amount) * float(dff['ratio'].values[0])
 
 
 if __name__ == '__main__':
