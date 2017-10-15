@@ -3,7 +3,7 @@
 import numpy as np
 import pandas as pd
 
-from handler import Poloniex, Bittrex, Cryptopia
+from price.handler import Poloniex, Bittrex, Cryptopia
 
 
 # Settings
@@ -17,10 +17,10 @@ bittrex = Bittrex()
 cryptopia = Cryptopia()
 
 
-class PriceHandler(object):
-	tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'ETH']
+class OutputHandler(object):
+    tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'ETH']
 
-	@staticmethod
+    @staticmethod
     def build_order_book(pair, depth):
 
         poloniex_data = poloniex.get_order_book(pair)
@@ -66,10 +66,10 @@ class PriceHandler(object):
         return np_bid, np_ask
 
 
-	@staticmethod
-	def get_quantity_pairs():
+    @staticmethod
+    def get_quantity_pairs():
 
-        bid, ask = build_order_book('BTC_ETH')
+        bid, ask = OutputHandler.build_order_book('BTC_ETH', depth)
         pairs = {}
 
         payload = {
@@ -84,4 +84,4 @@ class PriceHandler(object):
                    }
         }
 
-		return payload
+        return payload

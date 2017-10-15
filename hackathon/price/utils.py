@@ -1,4 +1,5 @@
 import random
+from price.output_handler import OutputHandler
 from price.models import PriceData
 from hackathon.celery import update_signal
 from django.dispatch import receiver
@@ -11,24 +12,29 @@ class Utils(object):
 
 	@staticmethod
 	def seed_db():
-		price_pairs = PriceHandler.get_quantity_pairs()
+		price_pairs = OutputHandler.get_quantity_pairs()
+		#tokens = ['ZRX', 'MTL', 'DNT', 'OMG', 'ANT', 'WETH']
 		tokens = ['ZRX', 'MTL', 'WETH']
+
 		for b in tokens:
 				for s in tokens:
 					if s is not b:
+						print("reached")
 						if PriceData.objects.filter(buy_token=b, sell_token=s).exists():
+							print("2")
 							trade = PriceData.objects.filter(buy_token=b, sell_token=s).all()[0]
 							bq, sq, cancel = price_pairs[b][s]
-							# bq = random.uniform(.5, 2)
-							# sq = random.uniform(.5, 2)
-							trade.buy_quantity = bq
-							trade.sell_quantity = sq
+							#bq = random.uniform(.5, 2) 
+							#sq = random.uniform(.5, 2)
+							trade.buy_quantity = bq[0]
+							trade.sell_quantity = sq[0]
 							trade.save()
 						else:
 							bq, sq, cancel = price_pairs[b][s]
-							# bq = random.uniform(.5, 2)
-							# sq = random.uniform(.5, 2)
-							PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
+							#bq = random.uniform(.5, 2) 
+							#sq = random.uniform(.5, 2)
+							print((b, bq[0], s, sq[0]))
+							PriceData.objects.create(buy_token=b, buy_quantity=bq[0], sell_token=s, sell_quantity=sq[0], cancel_order=False)
 
 # Hacky functions
 #from price.price_handler import PriceHandler
@@ -41,7 +47,7 @@ def seed_db():
 	for b in tokens:
 			for s in tokens:
 				if s is not b:
-					bq = random.uniform(.5, 2)
+					bq = random.uniform(.5, 2) 
 					sq = random.uniform(.5, 2)
 					PriceData.objects.create(buy_token=b, buy_quantity=bq, sell_token=s, sell_quantity=sq, cancel_order=False)
 '''
